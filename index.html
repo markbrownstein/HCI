@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>Brownstein Family Home Page</title>
+		<meta http-equiv=Content-Type content="text/html; charset=iso-8859-1" />
+		<style type=text/css>
+			div.small { font-size: x-small }
+			td.small { font-size: x-small }
+			font.URL { color: #808080 }
+			td.table { font-size: small }
+			div.browse { font-size: small }
+			td.browse { font-size: small }
+			li { font-size: small }
+			browse { font-size: small }
+			a.light_browse:link { color: #ffffff }
+			a.light_browse:visited { color: #ffffff }
+			a.light_browse:active { color: #ffffff }
+		</style>
+		<script type="text/javascript">
+			function getCookie(cookie_name) {
+				var i, x, y, cookies = document.cookie.split(";");
+				for(i = 0; i < cookies.length; i++) {
+					x = cookies[i].substr(0, cookies[i].indexOf("="));
+					y = cookies[i].substr(cookies[i].indexOf("=") + 1);
+					x = x.replace(/^\s+|\s+$/g, "");
+					if(x == cookie_name) {
+						return unescape(y);
+					}
+				}
+				
+				return null;
+			}
+
+			function setCookie(cookie_name, value, exdays) {
+				var exdate = new Date();
+				exdate.setDate(exdate.getDate() + exdays);
+				var cookie_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+				document.cookie = cookie_name + "=" + cookie_value;
+			}
+			
+			function clearCookie(cookie_name) {
+				setCookie(cookie_name, "", -1);				
+			}
+
+			function getGet(key) { 
+				var urlHalves = String(document.location).split('?');
+				if(urlHalves[1]) {
+					var urlVars = urlHalves[1].split('&');
+					for(var i = 0; i <= urlVars.length; i++) {
+						if(urlVars[i]) {
+							var urlVarPair = urlVars[i].split('=');
+							if(urlVarPair[0] == key) {
+								return unescape(urlVarPair[1]);
+							}
+						}
+					}
+				}
+
+				return null;
+			}
+			
+			function readCookies() {
+				// First see if we allow cookies.
+				if(navigator.cookieEnabled == 0) {
+					// Nope, hide remember.
+					var row = document.getElementById("remember_login_and_password_row");
+					row.style.display="none";				
+				}
+				else {
+					var clear = 0;
+					var visible = 1; 
+					
+					var logout = getGet("logout");
+					// Next, check if we are logging out.
+					if(logout == "true") {
+						clear = 1;
+					}
+					else {	
+						// Test cookies.
+						var home_remember_user_password = getCookie("home_remember_user_password");
+						var home_saved_user = getCookie("home_saved_user");
+						var home_saved_password = getCookie("home_saved_password");
+						var home_saved_hpassword = getCookie("home_saved_hpassword");
+						if(home_remember_user_password != null &&home_remember_user_password == "1" &&
+							home_saved_user != null && (home_saved_password != null || home_saved_hpassword != null)) {
+							// Relocate to home/index.php!
+							//window.location.href = "home/index.php?reset_session=true";
+							// Call the submit function of the login form.
+							var form = document.getElementById("login");
+							form.submit();
+							visible = 0;
+						}
+						else {
+							clear = 1;							
+						}
+					}
+					
+					if(clear == 1) {
+						clearCookie("home_remember_user_password");
+						clearCookie("home_saved_user");
+						clearCookie("home_saved_password");
+						clearCookie("home_saved_hpassword");
+					}
+					
+					if(visible) {
+						var mainDiv = document.getElementById("main");
+						mainDiv.style.visibility = 'visible';
+					}
+				}				
+			}
+			
+			function submitSignIn() {
+				var remember_login_and_password = document.getElementById("remember_login_and_password");
+				var user = document.getElementById("user");
+				var password = document.getElementById("password");
+				if(remember_login_and_password.checked && user.value != "" && password.value != "") {
+					setCookie("home_remember_user_password", "1", 365);
+					setCookie("home_saved_user", user.value, 365);
+					setCookie("home_saved_password", password.value, 365);
+				}
+			}
+		</script>
+	</head>
+	<body bgColor=#ffffff onload="readCookies()">
+		<div align="center" style="visibility:hidden" id="main">
+			<a href="index.html">
+				<img height="36" alt="markbrownstein.net" src="home/images/home1.jpg" width="288" border="0" />
+			</a>
+      		<br />
+      		<br />
+			<table border="2" bordercolor="#000000" width="340">
+				<tr>
+					<td>
+						<table cellspacing="0" cellpadding="4" width="100%" bgcolor="#FFFF99" border="0">
+							<tbody>
+								<tr>
+									<td align="center" valign="middle" bgcolor="#990066" colspan="2">
+										<div align="center">
+											<table>
+												<tr>
+													<td><font size="+2" color="#FFFFFF"><b>Sign in to The Brownsteins</b></font></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+								<form id="login" name="login" action="home/index.php" method="post" >
+									<input type="hidden" name="reset_session" value="true" />
+									<tr>
+										<td align=right>Login:</td>
+										<td>
+											<input id="user" type="text" name="user" />
+										</td>
+									</tr>
+									<tr>
+										<td align=right>Password:</td>
+										<td>
+											<input id="password" type="password" name="password" />
+										</td>
+									</tr>
+									<tr id="remember_login_and_password_row">
+										<td align="middle" colspan="2">
+											<input id="remember_login_and_password" type="checkbox" name="remember" />Remember my Login and Password
+										</td>
+									</tr>
+									<tr>
+										<td>&nbsp;</td>
+										<td>
+											<input type="submit" value="Sign in" name="login" onclick="submitSignIn()" />
+										</td>
+									</tr>
+								</form>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
